@@ -28,7 +28,7 @@ export function App() {
 
   return (
     <main>
-      <h1>Overview of Holidays in {{getHolidays.country}} {{getHolidays.year}}</h1>
+      <h1>Overview of Holidays in {holidays[0]?.date.split('-')[0]}</h1>
       {holidays && holidays.length && (
         <div>
           {holidays.map((item, index) => (
