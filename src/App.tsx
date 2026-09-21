@@ -41,6 +41,7 @@ async function fetchHolidays(year: string, country: string) {
 export default function App() {
   const [year, setYear] = useState("2026");
   const [country, setCountry] = useState("NO");
+  const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
 
   const { data: countries = [] } = useQuery({
     queryKey: ["countries"],
@@ -92,89 +93,113 @@ export default function App() {
     <main className="min-h-screen px-6 py-16 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 text-slate-700">
       <div className="mx-auto max-w-4xl rounded-3xl bg-white/30 backdrop-blur-sm border border-white/40 shadow-xl p-10">
 
-        <h1 className="mb-12 text-center text-5xl font-bold tracking-tight text-slate-700">
-          Holidays in {countries.find((c) => c.countryCode === country)?.name} {year}
-        </h1>
-
-        <div className="mx-auto mb-12 flex max-w-xl flex-col gap-4 sm:flex-row sm:justify-center">
-          <select
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="w-full rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm px-4 py-3 text-base text-slate-700 shadow-sm focus:ring-4 focus:ring-blue-300 sm:w-40"
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-
+        <h1 className="mb-12 flex flex-wrap items-center justify-center gap-3 text-center text-4xl font-bold tracking-tight text-slate-700 sm:text-5xl">
+          <span>Holidays in</span>
           <select
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm px-4 py-3 text-base text-slate-700 shadow-sm focus:ring-4 focus:ring-blue-300 sm:w-72"
+            aria-label="Select country"
+            className="w-48 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-base font-bold text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
           >
             {countries.map((c) => (
               <option key={c.countryCode} value={c.countryCode}>{c.name}</option>
             ))}
           </select>
-        </div>
 
-        <div className="space-y-12">
-          {months.map((month) => {
-            const { blanks, days } = buildCalendar(year, month);
-            const items = holidaysByMonth[month] ?? [];
+          <select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            aria-label="Select year"
+            className="w-28 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-base font-bold text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </h1>
 
-            return (
-              <div key={month} className="rounded-2xl bg-white/40 backdrop-blur-sm border border-white/40 shadow-md p-8">
+        <div className="mx-auto flex max-w-4xl items-center gap-2 sm:gap-4">
+          <button
+            type="button"
+            onClick={() => setMonthIndex((current) => Math.max(0, current - 1))}
+            disabled={monthIndex === 0}
+            aria-label="Previous month"
+            title="Previous month"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            &larr;
+          </button>
 
-                <h2 className="mb-6 text-center text-3xl font-semibold text-slate-700">
-                  {new Date(Number(year), Number(month) - 1).toLocaleString("en", {
-                    month: "long",
-                  })}
-                </h2>
+          <div className="min-w-0 flex-1">
+            {(() => {
+              const month = months[monthIndex];
+              const { blanks, days } = buildCalendar(year, month);
+              const items = holidaysByMonth[month] ?? [];
 
-                <div className="mb-4 grid grid-cols-7 gap-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
-                  <div>Mon</div><div>Tue</div><div>Wed</div>
-                  <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-                </div>
+              return (
+                <div key={month} className="rounded-2xl border border-white/40 bg-white/40 p-8 shadow-md backdrop-blur-sm">
 
-                <div className="grid grid-cols-7 gap-3">
-                  {Array.from({ length: blanks }).map((_, i) => (
-                    <div key={`blank-${i}`} className="h-16 sm:h-20"></div>
-                  ))}
+                  <h2 className="mb-6 text-center text-3xl font-semibold text-slate-700">
+                    {new Date(Number(year), Number(month) - 1).toLocaleString("en", {
+                      month: "long",
+                    })}
+                  </h2>
 
-                  {days.map((day) => {
-                    const dateStr = `${year}-${month}-${String(day).padStart(2, "0")}`;
-                    const holiday = items.find((h) => h.date === dateStr);
-                    const holidayColor = isRedDay(holiday)
-                      ? "border-red-300 bg-red-100/70"
-                      : isGreenDay(holiday)
-                        ? "border-green-300 bg-green-200/70"
-                        : "border-white/40 bg-white/70";
+                  <div className="mb-4 grid grid-cols-7 gap-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
+                    <div>Mon</div><div>Tue</div><div>Wed</div>
+                    <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+                  </div>
 
-                    return (
-                      <div
-                        key={dateStr}
-                        className={`flex h-16 sm:h-20 flex-col items-center justify-start rounded-xl 
+                  <div className="grid grid-cols-7 gap-3">
+                    {Array.from({ length: blanks }).map((_, i) => (
+                      <div key={`blank-${i}`} className="h-16 sm:h-20"></div>
+                    ))}
+
+                    {days.map((day) => {
+                      const dateStr = `${year}-${month}-${String(day).padStart(2, "0")}`;
+                      const holiday = items.find((h) => h.date === dateStr);
+                      const holidayColor = isRedDay(holiday)
+                        ? "border-red-300 bg-red-100/70"
+                        : isGreenDay(holiday)
+                          ? "border-green-300 bg-green-200/70"
+                          : "border-white/40 bg-white/70";
+
+                      return (
+                        <div
+                          key={dateStr}
+                          className={`flex h-16 sm:h-20 flex-col items-center justify-start rounded-xl 
                           border ${holidayColor} backdrop-blur-sm p-2 shadow-sm 
                           transition-all hover:-translate-y-1 hover:shadow-md
                         `}
-                      >
-                        <span className="text-sm font-semibold text-slate-700 sm:text-base">
-                          {day}
-                        </span>
-
-                        {holiday && (
-                          <span className="mt-1 text-[0.65rem] font-medium text-slate-700 sm:text-xs text-center">
-                            {holiday.localName}
+                        >
+                          <span className="text-sm font-semibold text-slate-700 sm:text-base">
+                            {day}
                           </span>
-                        )}
-                      </div>
-                    );
-                  })}
+
+                          {holiday && (
+                            <span className="mt-1 text-[0.65rem] font-medium text-slate-700 sm:text-xs text-center">
+                              {holiday.localName}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })()}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMonthIndex((current) => Math.min(months.length - 1, current + 1))}
+            disabled={monthIndex === months.length - 1}
+            aria-label="Next month"
+            title="Next month"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            &rarr;
+          </button>
         </div>
       </div>
     </main>
