@@ -118,19 +118,19 @@ export default function App() {
           </select>
         </h1>
 
-        <div className="mx-auto flex max-w-4xl items-center gap-2 sm:gap-4">
+        <div className="relative mx-auto max-w-3xl">
           <button
             type="button"
             onClick={() => setMonthIndex((current) => Math.max(0, current - 1))}
             disabled={monthIndex === 0}
             aria-label="Previous month"
             title="Previous month"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
+            className="absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
           >
             &larr;
           </button>
 
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             {(() => {
               const month = months[monthIndex];
               const { blanks, days } = buildCalendar(year, month);
@@ -197,7 +197,7 @@ export default function App() {
             disabled={monthIndex === months.length - 1}
             aria-label="Next month"
             title="Next month"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
+            className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/60 text-xl font-semibold text-slate-700 shadow-sm transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
           >
             &rarr;
           </button>
