@@ -137,22 +137,22 @@ export default function App() {
               const items = holidaysByMonth[month] ?? [];
 
               return (
-                <div key={month} className="rounded-2xl border border-white/40 bg-white/40 p-8 shadow-md backdrop-blur-sm">
+                <div key={month} className="rounded-2xl border border-white/40 bg-white/40 p-5 shadow-md backdrop-blur-sm sm:p-6">
 
-                  <h2 className="mb-6 text-center text-3xl font-semibold text-slate-700">
+                  <h2 className="mb-4 text-center text-3xl font-semibold text-slate-700">
                     {new Date(Number(year), Number(month) - 1).toLocaleString("en", {
                       month: "long",
                     })}
                   </h2>
 
-                  <div className="mb-4 grid grid-cols-7 gap-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <div className="mb-3 grid grid-cols-7 gap-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
                     <div>Mon</div><div>Tue</div><div>Wed</div>
                     <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
                   </div>
 
-                  <div className="grid grid-cols-7 gap-3">
+                  <div className="grid grid-cols-7 gap-2">
                     {Array.from({ length: blanks }).map((_, i) => (
-                      <div key={`blank-${i}`} className="h-16 sm:h-20"></div>
+                      <div key={`blank-${i}`} className="h-12 sm:h-14"></div>
                     ))}
 
                     {days.map((day) => {
@@ -167,7 +167,8 @@ export default function App() {
                       return (
                         <div
                           key={dateStr}
-                          className={`flex h-16 sm:h-20 flex-col items-center justify-start rounded-xl 
+                          className={`flex h-12 min-w-0 flex-col items-center justify-start overflow-hidden rounded-xl 
+                          sm:h-14
                           border ${holidayColor} backdrop-blur-sm p-2 shadow-sm 
                           transition-all hover:-translate-y-1 hover:shadow-md
                         `}
