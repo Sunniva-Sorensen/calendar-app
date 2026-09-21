@@ -99,7 +99,7 @@ export default function App() {
             value={country}
             onChange={(e) => setCountry(e.target.value)}
             aria-label="Select country"
-            className="w-48 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-base font-bold text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
+            className="w-48 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-lg font-normal text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
           >
             {countries.map((c) => (
               <option key={c.countryCode} value={c.countryCode}>{c.name}</option>
@@ -110,7 +110,7 @@ export default function App() {
             value={year}
             onChange={(e) => setYear(e.target.value)}
             aria-label="Select year"
-            className="w-28 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-base font-bold text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
+            className="w-28 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-lg font-normal text-slate-700 shadow-sm backdrop-blur-sm outline-none transition hover:bg-white/90 focus:ring-4 focus:ring-blue-300"
           >
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>
@@ -152,7 +152,7 @@ export default function App() {
 
                   <div className="grid grid-cols-7 gap-2">
                     {Array.from({ length: blanks }).map((_, i) => (
-                      <div key={`blank-${i}`} className="h-12 sm:h-14"></div>
+                      <div key={`blank-${i}`} className="h-14 sm:h-16"></div>
                     ))}
 
                     {days.map((day) => {
@@ -167,8 +167,8 @@ export default function App() {
                       return (
                         <div
                           key={dateStr}
-                          className={`flex h-12 min-w-0 flex-col items-center justify-start overflow-hidden rounded-xl 
-                          sm:h-14
+                          className={`flex h-14 min-w-0 flex-col items-center justify-start overflow-hidden rounded-xl 
+                          sm:h-16
                           border ${holidayColor} backdrop-blur-sm p-2 shadow-sm 
                           transition-all hover:-translate-y-1 hover:shadow-md
                         `}
