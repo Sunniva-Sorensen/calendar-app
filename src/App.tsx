@@ -6,12 +6,23 @@ type Holiday = {
   date: string;
   localName: string;
   name: string;
+  types: string[]; // Public = rød dag, Observance = grønn dag
 };
 
 type Country = {
   countryCode: string;
   name: string;
 };
+
+// Rød dag = types inkluderer "Public"
+function isRedDay(h?: Holiday) {
+  return h?.types?.includes("Public");
+}
+
+// Grønn dag = har types, men ikke Public
+function isGreenDay(h?: Holiday) {
+  return Boolean(h?.types?.length && !h.types.includes("Public"));
+}
 
 async function fetchCountries() {
   const res = await axios.get<Country[]>(
@@ -43,11 +54,13 @@ export default function App() {
 
   function groupByMonth(holidays: Holiday[]) {
     const months: Record<string, Holiday[]> = {};
+
     holidays.forEach((h) => {
       const month = h.date.split("-")[1].padStart(2, "0");
       if (!months[month]) months[month] = [];
       months[month].push(h);
     });
+
     return months;
   }
 
@@ -59,8 +72,10 @@ export default function App() {
   function buildCalendar(year: string, month: string) {
     const firstDay = new Date(`${year}-${month}-01`).getDay();
     const daysInMonth = new Date(Number(year), Number(month), 0).getDate();
+
     const blanks = firstDay === 0 ? 6 : firstDay - 1;
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
     return { blanks, days };
   }
 
@@ -77,12 +92,10 @@ export default function App() {
     <main className="min-h-screen px-6 py-16 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 text-slate-700">
       <div className="mx-auto max-w-4xl rounded-3xl bg-white/30 backdrop-blur-sm border border-white/40 shadow-xl p-10">
 
-        {/* Header */}
         <h1 className="mb-12 text-center text-5xl font-bold tracking-tight text-slate-700">
           Holidays in {countries.find((c) => c.countryCode === country)?.name} {year}
         </h1>
 
-        {/* Dropdowns */}
         <div className="mx-auto mb-12 flex max-w-xl flex-col gap-4 sm:flex-row sm:justify-center">
           <select
             value={year}
@@ -105,7 +118,6 @@ export default function App() {
           </select>
         </div>
 
-        {/* Calendar */}
         <div className="space-y-12">
           {months.map((month) => {
             const { blanks, days } = buildCalendar(year, month);
@@ -114,20 +126,17 @@ export default function App() {
             return (
               <div key={month} className="rounded-2xl bg-white/40 backdrop-blur-sm border border-white/40 shadow-md p-8">
 
-                {/* Month Title */}
                 <h2 className="mb-6 text-center text-3xl font-semibold text-slate-700">
                   {new Date(Number(year), Number(month) - 1).toLocaleString("en", {
                     month: "long",
                   })}
                 </h2>
 
-                {/* Weekdays */}
                 <div className="mb-4 grid grid-cols-7 gap-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">
                   <div>Mon</div><div>Tue</div><div>Wed</div>
                   <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
                 </div>
 
-                {/* Days */}
                 <div className="grid grid-cols-7 gap-3">
                   {Array.from({ length: blanks }).map((_, i) => (
                     <div key={`blank-${i}`} className="h-16 sm:h-20"></div>
@@ -136,20 +145,26 @@ export default function App() {
                   {days.map((day) => {
                     const dateStr = `${year}-${month}-${String(day).padStart(2, "0")}`;
                     const holiday = items.find((h) => h.date === dateStr);
+                    const holidayColor = isRedDay(holiday)
+                      ? "border-red-300 bg-red-100/70"
+                      : isGreenDay(holiday)
+                        ? "border-green-300 bg-green-200/70"
+                        : "border-white/40 bg-white/70";
 
                     return (
                       <div
                         key={dateStr}
                         className={`flex h-16 sm:h-20 flex-col items-center justify-start rounded-xl 
-                          border border-white/40 bg-white/70 backdrop-blur-sm p-2 shadow-sm 
+                          border ${holidayColor} backdrop-blur-sm p-2 shadow-sm 
                           transition-all hover:-translate-y-1 hover:shadow-md
-                          ${holiday ? "bg-blue-200/60 border-blue-300" : ""}`}
+                        `}
                       >
                         <span className="text-sm font-semibold text-slate-700 sm:text-base">
                           {day}
                         </span>
+
                         {holiday && (
-                          <span className="mt-1 text-[0.65rem] font-medium text-blue-700 sm:text-xs text-center">
+                          <span className="mt-1 text-[0.65rem] font-medium text-slate-700 sm:text-xs text-center">
                             {holiday.localName}
                           </span>
                         )}
